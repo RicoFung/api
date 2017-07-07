@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">   
+  
+<mapper namespace="entity.Api">
+  	
+	<resultMap type="entity.Api" id="resultApp">
+		<id property="m.id" column="id"/>
+		<result property="m.tc_app_id" column="tc_app_id"/>
+		<result property="m.tc_code" column="tc_code"/>
+		<result property="m.tc_name" column="tc_name"/>
+		<result property="m.tc_url" column="tc_url"/>
+		<result property="m.tc_order" column="tc_order"/>
+	</resultMap>
+	<resultMap type="entity.Api" id="resultMenu">
+		<id property="m.id" column="id"/>
+		<result property="m.pid" column="pid"/>
+		<result property="m.tc_app_id" column="tc_app_id"/>
+		<result property="m.tc_permit_id" column="tc_permit_id"/>
+		<result property="m.tc_code" column="tc_code"/>
+		<result property="m.tc_name" column="tc_name"/>
+		<result property="m.tc_url" column="tc_url"/>
+		<result property="m.tc_order" column="tc_order"/>
+	</resultMap>
+	<resultMap type="entity.Api" id="resultBtn">
+		<id property="m.id" column="id"/>
+		<result property="m.pid" column="pid"/>
+		<result property="m.tc_app_id" column="tc_app_id"/>
+		<result property="m.tc_code" column="tc_code"/>
+		<result property="m.tc_name" column="tc_name"/>
+		<result property="m.tc_url" column="tc_url"/>
+		<result property="m.tc_order" column="tc_order"/>
+	</resultMap>
+	<resultMap type="entity.Api" id="resultAct">
+		<id property="m.id" column="id"/>
+		<result property="m.pid" column="pid"/>
+		<result property="m.tc_app_id" column="tc_app_id"/>
+		<result property="m.tc_code" column="tc_code"/>
+		<result property="m.tc_name" column="tc_name"/>
+		<result property="m.tc_url" column="tc_url"/>
+		<result property="m.tc_order" column="tc_order"/>
+	</resultMap>
+  	
+	<sql id="columnsApp">
+		t.id, t.tc_code, t.tc_name, t.tc_url, t.tc_order
+	</sql>
+	<sql id="columnsMenu">
+		t.id, t.pid, t.tc_app_id, t.tc_permit_id, t.tc_code, t.tc_name, t1.tc_url, t.tc_order
+	</sql>
+	<sql id="columnsPermit">
+		t.id, t.pid, t.tc_app_id, t.tc_code, t.tc_name, t.tc_url, t.tc_order
+	</sql>
+	<sql id="columnsBtn">
+		t.id, t.pid, t.tc_app_id, t.tc_code, t.tc_name, t.tc_url, t.tc_order
+	</sql>
+	<sql id="columnsAct">
+		t.id, t.pid, t.tc_app_id, t.tc_code, t.tc_name, t.tc_url, t.tc_order
+	</sql>
+	
+	<sql id="dynamicWhere">
+		<where>
+			<if test="id != null and id != ''"> and t.id = #{id}</if>
+			<if test="pid != null and pid != ''"> and t.pid = #{pid}</if>
+			<if test="tc_app_id != null and tc_app_id != ''"> and t.tc_app_id = #{tc_app_id}</if>
+			<if test="tc_code != null and tc_code != ''"> and t.tc_code like concat('%',#{tc_code},'%') </if>
+			<if test="tc_name != null and tc_name != ''"> and t.tc_name like concat('%',#{tc_name},'%') </if>
+		</where>
+	</sql>	
+	
+	<select id="getAppByUserId" resultType="list" resultMap="resultApp">
+		select <include refid="columnsApp"/> from tb_app t
+		 inner join tb_role_permit_rs t1 on t.tc_permit_id=t1.tc_permit_id
+		 inner join tb_user_role_rs t2 on t1.tc_role_id=t2.tc_role_id and t2.tc_user_id=#{tc_user_id}
+		 <include refid="dynamicWhere" />
+		 group by t.id
+		 order by t.tc_order
+	</select>
+	<select id="getMenuByUserId" resultType="list" resultMap="resultMenu">
+		select <include refid="columnsMenu"/> from tb_menu t
+	     inner join tb_permit t1 on t.tc_permit_id = t1.id
+		 inner join tb_role_permit_rs t2 on t.tc_permit_id=t2.tc_permit_id
+		 inner join tb_user_role_rs t3 on t2.tc_role_id=t3.tc_role_id and t3.tc_user_id=#{tc_user_id}
+		 <include refid="dynamicWhere" />
+		 group by t.id
+		 order by t.tc_order
+	</select>
+	<select id="getBtnByUserId" resultType="list" resultMap="resultBtn">
+		select <include refid="columnsBtn"/> from tb_permit t
+		 inner join tb_role_permit_rs t1 on t.id=t1.tc_permit_id and t.tc_type=2
+		 inner join tb_user_role_rs t2 on t1.tc_role_id=t2.tc_role_id and t2.tc_user_id=#{tc_user_id}
+		 <include refid="dynamicWhere" />
+		 group by t.id
+		 order by t.tc_order
+	</select>
+	<select id="getActByUserId" resultType="list" resultMap="resultAct">
+		select <include refid="columnsAct"/> from tb_permit t
+		 inner join tb_role_permit_rs t1 on t.id = t1.tc_permit_id
+		 inner join tb_user_role_rs t2 on t1.tc_role_id = t2.tc_role_id and t2.tc_user_id = #{tc_user_id}
+		 where t.tc_app_id = #{tc_app_id}
+		   and t.tc_type &lt;&gt; 0
+	</select>
+	
+</mapper>  
