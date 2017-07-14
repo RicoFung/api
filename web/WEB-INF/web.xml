@@ -8,7 +8,7 @@
   <!-- 设置log4j存放Log文件位置（通过spring统一进行管理） -->
 	<context-param>
 		<param-name>webAppRootKey</param-name>
-		<param-value>log.root</param-value>
+		<param-value>api_log.root</param-value>
 	</context-param>
   
   <!-- 加载log4j的配置文件 -->	

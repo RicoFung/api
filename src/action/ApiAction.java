@@ -11,7 +11,7 @@ import service.ApiService;
 
 @Scope("prototype")
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/")
 public class ApiAction extends BaseController<Api>
 {
 	@Autowired
